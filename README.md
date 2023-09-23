@@ -15,7 +15,7 @@ pip install -r requirements.txt
 8. Wait for the script to finish and copy the steps to solve the issue.
 
 ## Example
-```bash
+```
 Enter the url of the issue you want to solve: https://github.com/pytorch/pytorch/issues/107006#
 The steps to solve the issue are: 
 Overview:
