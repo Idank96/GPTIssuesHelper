@@ -55,8 +55,9 @@ def create_prompt() -> str:
 
 
 def connect_to_openai():
+    path_to_key = "..\keys\openai_key.txt"
     # open file with key
-    with open("..\keys\openai_key.txt", "r") as file:
+    with open(path_to_key, "r") as file:
         my_key = file.read()
 
     openai.api_key = my_key
@@ -91,7 +92,6 @@ def display_steps(steps_to_solve: str):
 
 def main():
     url = get_url()
-    # extract_good_first_issue()
     issue_text = extract_issue_text(url)
     pre_prompt = create_prompt()
     connect_to_openai()
