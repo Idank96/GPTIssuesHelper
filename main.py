@@ -1,6 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 import openai
+import g4f
+
+using_openai = False
 
 
 def get_url() -> str:
@@ -39,11 +42,11 @@ def extract_issue_text(url: str) -> str:
 
 def create_prompt() -> str:
     pre_prompt = """
-    You will be provided with a GitHub issue. Your task is to write instructions and steps on how to solve the issue, based on the information given in the issue
+    You will be provided with a GitHub issue. 
+    Your task is to write instructions and steps on how to solve the issue, based on the information given in the issue.
     Use the following format for your response:
-
-    Start by providing an initial overview of the problem to a Python-competent computer science student who is new to the issue.
-    Explain any technical jargon that you use.
+    Start by providing an initial overview of the problem to a Python-competent computer science student who is new to the issue and new to github.
+    Write a list of any technical jargon that you use and explain each of the terms.
     List the steps in bullet points, using numbers for each step.
     Use clear and concise language.
     Provide code snippets or commands when necessary, using triple backticks to enclose them.
@@ -64,11 +67,14 @@ def connect_to_openai():
 
 
 def init_model() -> str:
-    model = "gpt-3.5-turbo"
+    if using_openai:
+        model = "gpt-3.5-turbo"
+    else:
+        model = g4f.models.gpt_4
     return model
 
 
-def get_steps_to_solve(model: str, pre_prompt: str, issue_text: str) -> str:
+def get_steps_to_solve_openai(model: str, pre_prompt: str, issue_text: str) -> str:
     messages = [{'role': 'user',
                  'content': pre_prompt+issue_text}]
 
@@ -82,7 +88,6 @@ def get_steps_to_solve(model: str, pre_prompt: str, issue_text: str) -> str:
 
 
 def display_steps(steps_to_solve: str):
-    print("The steps to solve the issue are: ")
     # Display the text in a window with each line in a separate line.
     # Split by \n:
     steps_to_solve_seperated = steps_to_solve.split("\n")
@@ -90,16 +95,28 @@ def display_steps(steps_to_solve: str):
         print(step)
 
 
+def get_steps_to_solve_g4f(model, pre_prompt, issue_text):
+    messages = [{'role': 'user',
+                 'content': pre_prompt + issue_text}]
+    response = g4f.ChatCompletion.create(
+        model=model,
+        messages=messages,
+    )
+    return response
+
+
 def main():
     url = get_url()
     issue_text = extract_issue_text(url)
     pre_prompt = create_prompt()
-    connect_to_openai()
     model = init_model()
-    steps_to_solve = get_steps_to_solve(model, pre_prompt, issue_text)
+    if using_openai:
+        connect_to_openai()
+        steps_to_solve = get_steps_to_solve_openai(model, pre_prompt, issue_text)
+    else:
+        steps_to_solve = get_steps_to_solve_g4f(model, pre_prompt, issue_text)
     display_steps(steps_to_solve)
 
 
 if __name__ == '__main__':
     main()
-

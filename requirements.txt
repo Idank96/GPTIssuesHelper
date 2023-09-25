@@ -1,3 +1,5 @@
 beautifulsoup4
 requests
+pyexecjs
 openai
+g4f
