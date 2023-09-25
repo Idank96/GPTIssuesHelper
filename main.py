@@ -46,12 +46,11 @@ def create_prompt() -> str:
     Your task is to write instructions and steps on how to solve the issue, based on the information given in the issue.
     Use the following format for your response:
     Start by providing an initial overview of the problem to a Python-competent computer science student who is new to the issue and new to github.
-    Write a list of any technical jargon that you use and explain each of the terms.
+    Write a list of any technical jargon, technical terms that you use and explain each of the terms.
     List the steps in bullet points, using numbers for each step.
     Use clear and concise language.
     Provide code snippets or commands when necessary, using triple backticks to enclose them.
     Write at the end of your message "Good luck!".
-    
     The issue is:
     """
     return pre_prompt
@@ -88,9 +87,9 @@ def get_steps_to_solve_openai(model: str, pre_prompt: str, issue_text: str) -> s
 
 
 def display_steps(steps_to_solve: str):
-    # Display the text in a window with each line in a separate line.
     # Split by \n:
     steps_to_solve_seperated = steps_to_solve.split("\n")
+    # Display the text beautifully:
     for step in steps_to_solve_seperated:
         print(step)
 
@@ -105,17 +104,25 @@ def get_steps_to_solve_g4f(model, pre_prompt, issue_text):
     return response
 
 
+def write_to_file(steps_to_solve: str, issue_id: str):
+    # Write to file:
+    with open(issue_id + ' Guide' + '.md', "w") as file:
+        file.write(steps_to_solve)
+
+
 def main():
     url = get_url()
     issue_text = extract_issue_text(url)
     pre_prompt = create_prompt()
     model = init_model()
+    print('Generating steps to solve the issue...')
     if using_openai:
         connect_to_openai()
         steps_to_solve = get_steps_to_solve_openai(model, pre_prompt, issue_text)
     else:
         steps_to_solve = get_steps_to_solve_g4f(model, pre_prompt, issue_text)
     display_steps(steps_to_solve)
+    write_to_file(steps_to_solve, url[-7:])
 
 
 if __name__ == '__main__':
