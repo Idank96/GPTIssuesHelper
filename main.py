@@ -2,8 +2,9 @@ from bs4 import BeautifulSoup
 import requests
 import openai
 import g4f
+import re
 
-using_openai = False
+using_openai = True
 
 
 def get_url() -> str:
@@ -104,10 +105,17 @@ def get_steps_to_solve_g4f(model, pre_prompt, issue_text):
     return response
 
 
-def write_to_file(steps_to_solve: str, issue_id: str):
+def write_to_file(steps_to_solve: str, url: str):
+    # Find the issue id with regex:
+    issue_id = re.findall(r'\d+', url)[-1]
+
     # Write to file:
-    with open(issue_id + ' Guide' + '.md', "w") as file:
+    path = issue_id + ' Guide' + '.md'
+    with open(path, "w") as file:
         file.write(steps_to_solve)
+
+    print('The steps to solve the issue have been written to a file:')
+    print(path)
 
 
 def main():
@@ -122,7 +130,7 @@ def main():
     else:
         steps_to_solve = get_steps_to_solve_g4f(model, pre_prompt, issue_text)
     display_steps(steps_to_solve)
-    write_to_file(steps_to_solve, url[-7:])
+    write_to_file(steps_to_solve, url)
 
 
 if __name__ == '__main__':
