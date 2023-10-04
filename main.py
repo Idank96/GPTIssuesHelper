@@ -2,9 +2,10 @@ from bs4 import BeautifulSoup
 import requests
 import openai
 import g4f
+from g4f.Provider import (Bing, Bard)
 import re
 
-using_openai = True
+using_openai = False
 
 
 def get_url() -> str:
@@ -70,7 +71,7 @@ def init_model() -> str:
     if using_openai:
         model = "gpt-3.5-turbo"
     else:
-        model = g4f.models.gpt_4
+        model = g4f.models.default
     return model
 
 
@@ -87,22 +88,33 @@ def get_steps_to_solve_openai(model: str, pre_prompt: str, issue_text: str) -> s
     return generated_text
 
 
+def get_steps_to_solve_g4f(model, pre_prompt, issue_text):
+    messages = [{'role': 'user',
+                 'content': pre_prompt + issue_text}]
+    try:
+        response = g4f.ChatCompletion.create(
+            model=g4f.models.gpt_4,
+            provider=Bing,
+            messages=messages,
+        )
+        print(f'Using model: {model}')
+    except Exception as e:
+        print('Could not use GPT4. Trying default model instead.')
+        response = g4f.ChatCompletion.create(
+            model=model,
+            messages=messages,
+        )
+        print(f'Using model: {model}')
+    return response
+
+
+
 def display_steps(steps_to_solve: str):
     # Split by \n:
     steps_to_solve_seperated = steps_to_solve.split("\n")
     # Display the text beautifully:
     for step in steps_to_solve_seperated:
         print(step)
-
-
-def get_steps_to_solve_g4f(model, pre_prompt, issue_text):
-    messages = [{'role': 'user',
-                 'content': pre_prompt + issue_text}]
-    response = g4f.ChatCompletion.create(
-        model=model,
-        messages=messages,
-    )
-    return response
 
 
 def write_to_file(steps_to_solve: str, url: str):
