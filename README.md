@@ -1,10 +1,10 @@
 # GPTIssuesHelper
-GPTIssuesHelper is a Python script that uses GPT-3.5-turbo to help developers solve issues on GitHub.
+GPTIssuesHelper is a Python script that uses GPT to help developers solve issues on GitHub.
 
 ## Options
-You can use either OpenAI API with gpt-3.5-turbo or g4f with gpt-4:
+You can use either OpenAI API with gpt-3.5-turbo or g4f with gpt-4 or g4f with Bing-GPT4:
 1. Using OpenAI API with gpt-3.5-turbo: set `using_openai = True` at the beginning of the script.
-2. Using g4f with gpt-4: set `using_openai = False` at the beginning of the script.
+2. Using g4f with gpt-4: set `using_openai = False` at the beginning of the script. 
 
 ##  Usage
 1. Clone the repository
